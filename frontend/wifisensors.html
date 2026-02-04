@@ -1,0 +1,125 @@
+<div id="plugin-view"></div>
+
+<link rel="stylesheet" href="/templates/wifisensors/leaflet.css">
+
+<style>
+    .leaflet-container {
+        background-color: white;
+    }
+
+    .wifisensors-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .wifisensors-header > .btn-group {
+        text-align: center;
+    }
+
+    .wifisensors-ace-editor {
+        height: calc(100vh - 270px);
+    }
+</style>
+
+<script type="text/ng-template" id="app/wifisensors/index.html">
+    <div class="container">
+        <div class="wifisensors-header">
+            <div>
+                <a class="btnstylerev" back-button>{{ ::'Back' | translate }}</a>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-default"
+                        ng-show="$ctrl.pluginApiDevices.length > 1"
+                        ng-repeat="device in $ctrl.pluginApiDevices"
+                        ng-class="{'active': device.idx === $ctrl.selectedApiDeviceIdx}"
+                        ng-click="$ctrl.selectPlugin(device.idx)">
+                    {{::device.HardwareName}}
+                </button>
+            </div>
+
+            <div class="align-right" ng-if="$ctrl.controllerInfo && $ctrl.pluginInfo">
+                <div>{{ $ctrl.getVersionString() }}</div>
+            </div>
+        </div>
+
+        <h2 class="page-header">wifisensors</h2>
+
+        <ul id="tabs" class="nav nav-tabs sub-tabs" data-tabs="tabs">
+            <li class="active"><a data-target="#wifisensors-devices" data-toggle="tab">Devices</a></li>
+            <li><a data-target="#wifisensors-plugin-config" data-toggle="tab">Plugin Configuration</a></li>
+            <li><a data-target="#wifisensors-health" data-toggle="tab">Health</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="wifisensors-devices">
+                <page-loading-indicator ng-hide="$ctrl.wifiDevices"></page-loading-indicator>
+
+                <wifi-devices
+                        ng-if="$ctrl.wifiDevices"
+                        wifi-devices="$ctrl.wifiDevices"
+                        domoticz-devices="$ctrl.devices"
+                        on-update="$ctrl.fetchwifisensorsDevices()"
+                        on-update-domoticz-device="$ctrl.refreshDomoticzDevices()"></wifi-devices>
+            </div>
+
+            <div class="tab-pane" id="wifisensors-plugin-config">
+                <wifisensors-plugin-config />
+            </div>
+
+            <div class="tab-pane" id="wifisensors-health">
+                <wifisensors-health />
+            </div>
+        </div>
+    </div>
+
+    <wifisensors-fake-devices ng-show="false"></wifisensors-fake-devices>
+</script>
+
+<script type="text/ng-template" id="app/wifisensors/devices.html">
+    <div class="btn-panel align-right">        
+        <button class="btn btn-default" ng-click="$ctrl.onUpdate()">{{:: 'Refresh' | translate }}</button>
+    </div>
+
+    <wifi-devices-table
+            devices="$ctrl.wifiDevices"
+            on-update="$ctrl.onUpdate()"
+            on-select="$ctrl.selectwifisensorsDevice(device)"></wifi-devices-table>
+
+    <section ng-if="$ctrl.associatedDevices.length > 0">
+        <h2 class="page-header">{{:: 'Devices' | translate }}</h2>
+        <devices-table devices="$ctrl.associatedDevices" on-update="$ctrl.onUpdateDomoticzDevice()"></devices-table>
+    </section>
+</script>
+
+<script type="text/ng-template" id="app/wifisensors/wifisensorsPluginConfig.html">
+    <page-loading-indicator ng-hide="$ctrl.config"></page-loading-indicator>
+
+    <div class="btn-panel align-right">
+        <button 
+            class="btn btn-default" 
+            ng-disabled="!$ctrl.isModified"
+            ng-click="$ctrl.updateConfig()"
+        >{{:: 'Save' | translate }}</button>
+    </div>
+
+    <div class="wifisensors-ace-editor js-script-content"></div>
+</script>
+
+<script type="text/ng-template" id="app/wifisensors/wifisensorsHealth.html">
+    <page-loading-indicator ng-hide="$ctrl.config"></page-loading-indicator>
+
+    <div class="wifisensors-ace-editor js-script-content"></div>
+</script>
+
+<script>
+    require(['../templates/wifisensors'], function() {
+        angular.element(document).injector().invoke(function($compile) {
+            var $div = angular.element('<wifisensors-plugin></wifisensors-plugin>');
+            angular.element('#plugin-view').append($div);
+
+            var scope = angular.element($div).scope();
+            $compile($div)(scope);
+        });
+    });
+</script>

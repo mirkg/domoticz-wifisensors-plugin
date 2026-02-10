@@ -68,7 +68,7 @@ class BasePlugin:
         self.api = API(self.onApiCommand)
         self.devices_manager = DevicesManager()
 
-        self.headers = {'Authorization':'Basic ' + b64encode(f"{Parameters["Username"]}:{Parameters["Password"]}".encode('utf-8')).decode("ascii")}
+        self.headers = {'Authorization':'Basic ' + b64encode(f'{Parameters["Username"]}:{Parameters["Password"]}'.encode('utf-8')).decode("ascii")}
         self.wifisensors = Wifisensors(self.server_address + ":" + self.server_port, self.headers, 60, self.devices_manager, self.track_signal, self.track_memory)
 
     def checkDevices(self):

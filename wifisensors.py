@@ -120,17 +120,18 @@ class Wifisensors:
         if 'values' in data:
             values = data['values']
             for k in values:
-                values[k]['raw'] = {}
-                values[k]['nValue'] = 0
-                dtype = devices[k].to_json()['type']
-                if dtype == 'DHT22':
-                    values[k]['sValue'] = str(values[k]['temp']) + ";" + str(values[k]['humid']) + ";0"
-                elif dtype == 'TEMP_DALLAS':
-                    values[k]['sValue'] = str(values[k]['temp'])               
-                elif dtype == 'MOTION' or dtype == 'BUTTON' or dtype == 'RELAY' or dtype == 'SWITCH':
-                    values[k]['sValue'] = str(values[k]['state'])
-                else:
-                    values[k]['sValue'] = str(values[k]['value'])
+                if k in devices:
+                    values[k]['raw'] = {}
+                    values[k]['nValue'] = 0
+                    dtype = devices[k].to_json()['type']
+                    if dtype == 'DHT22':
+                        values[k]['sValue'] = str(values[k]['temp']) + ";" + str(values[k]['humid']) + ";0"
+                    elif dtype == 'TEMP_DALLAS':
+                        values[k]['sValue'] = str(values[k]['temp'])
+                    elif dtype == 'MOTION' or dtype == 'BUTTON' or dtype == 'RELAY' or dtype == 'SWITCH':
+                        values[k]['sValue'] = str(values[k]['state'])
+                    else:
+                        values[k]['sValue'] = str(values[k]['value'])
 
     def set_ieee(self, health):
         self.ieee = '0x' + health['mac'].replace(':', '')
@@ -172,8 +173,9 @@ class Wifisensors:
         global devices
         global values
         for k in values:
-            for dev in devices[k].devices:
-                dev.handle_message(devices[k].to_json(), values[k])
+            if k in devices:
+                for dev in devices[k].devices:
+                    dev.handle_message(devices[k].to_json(), values[k])
 
     def create_domoticz_dev(self, dev):
         wifisensors_device = dev

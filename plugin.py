@@ -1,5 +1,5 @@
 """
-<plugin key="WifiSensors" name="WifiSensors" version="0.1.0">
+<plugin key="WifiSensors" name="WifiSensors" version="0.1.1">
     <description>
         <h2>WifiSensors Plugin</h2>
         <p>Plugin to add support for <a href="https://github.com/mirkg/arduino-WifiSensors"> WifiSensors </a> project</p>

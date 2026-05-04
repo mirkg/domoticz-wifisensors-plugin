@@ -14,7 +14,7 @@ class UniversalAdapter(Adapter):
         self.name = wifisensors_device['type']
         wifisensors_device['name'] = self.name
         self.wifisensors_device = wifisensors_device
-        
+
         if 'exposes' not in wifisensors_device['definition']:
             domoticz.error(self.name + ': device exposes not found')
             return
@@ -24,7 +24,7 @@ class UniversalAdapter(Adapter):
 
     def _add_features(self, features):
         for item in features:
-            if 'name' in item and item['name'] in ['energy', 'power', 'temperature', 'humidity', 'pressure']:
+            if 'name' in item and item['name'] in ['energy', 'power', 'humidity', 'pressure']:
                 continue
             else:
                 self._add_feature(item)
